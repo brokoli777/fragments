@@ -11,5 +11,8 @@
     "url": "git+https://github.com/brokoli777/fragments.git"
   },
   "author": "Bregwin Jogi",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "3.2.5"
+  }
 }
