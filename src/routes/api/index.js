@@ -13,3 +13,5 @@ router.get('/fragments', require('./get'));
 // Other routes (POST, DELETE, etc.) will go here later on...
 
 module.exports = router;
+
+const unneededVariable = 'This variable is never used';
