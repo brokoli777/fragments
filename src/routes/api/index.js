@@ -14,4 +14,3 @@ router.get('/fragments', require('./get'));
 
 module.exports = router;
 
-const unneededVariable = 'This variable is never used';
