@@ -16,7 +16,13 @@ const {
 
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
-    // TODO
+
+    this.id = id || randomUUID();
+    this.ownerId = ownerId;
+    this.created = created || JSON.stringify(new Date);
+    this.updated = updated || this.created;
+    this.type = type;
+    this.size = size;
 
   }
 
@@ -28,6 +34,7 @@ class Fragment {
    */
   static async byUser(ownerId, expand = false) {
     // TODO
+    return await listFragments(ownerId, expand);
   }
 
   /**
@@ -38,6 +45,8 @@ class Fragment {
    */
   static async byId(ownerId, id) {
     // TODO
+    //fragment data?
+    return await readFragment(ownerId, id);
   }
 
   /**
@@ -48,6 +57,7 @@ class Fragment {
    */
   static delete(ownerId, id) {
     // TODO
+    return deleteFragment(ownerId, id);
   }
 
   /**
@@ -56,6 +66,7 @@ class Fragment {
    */
   save() {
     // TODO
+    return writeFragment(this);
   }
 
   /**
@@ -64,6 +75,7 @@ class Fragment {
    */
   getData() {
     // TODO
+    return readFragmentData(this.ownerId, this.id);
   }
 
   /**
@@ -73,6 +85,8 @@ class Fragment {
    */
   async setData(data) {
     // TODO
+    this.size = data.length;
+    return writeFragmentData(this.ownerId, this.id, data);
   }
 
   /**
@@ -91,6 +105,7 @@ class Fragment {
    */
   get isText() {
     // TODO
+    return this.mimeType.startsWith('text/');
   }
 
   /**
@@ -99,6 +114,7 @@ class Fragment {
    */
   get formats() {
     // TODO
+    return ['text/plain'];
   }
 
   /**
