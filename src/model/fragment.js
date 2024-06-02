@@ -124,6 +124,8 @@ class Fragment {
    */
   static isSupportedType(value) {
     // TODO
+    const supportedTypes = ['text/plain'];
+    return supportedTypes.includes(value);
   }
 }
 

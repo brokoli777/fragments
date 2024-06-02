@@ -4,11 +4,15 @@
 // Identity Token provided by Cognito. The token will be
 // parsed from the Authorization header (i.e., Bearer Token).
 
-const passport = require('passport');
+//TEMP COMMENTED OUT FOR NOW
+// const passport = require('passport');
 const BearerStrategy = require('passport-http-bearer').Strategy;
 const { CognitoJwtVerifier } = require('aws-jwt-verify');
 
 const logger = require('../logger');
+
+// We'll use our authorize middle module
+const authorize = require('./auth-middleware');
 
 // We expect AWS_COGNITO_POOL_ID and AWS_COGNITO_CLIENT_ID to be defined.
 if (!(process.env.AWS_COGNITO_POOL_ID && process.env.AWS_COGNITO_CLIENT_ID)) {
@@ -60,4 +64,6 @@ module.exports.strategy = () =>
     }
   });
 
-module.exports.authenticate = () => passport.authenticate('bearer', { session: false });
+//Commented out for now to use the authorize middleware, will use passport and cognito later
+// module.exports.authenticate = () => passport.authenticate('bearer', { session: false });
+module.exports.authenticate = () => authorize('bearer');
