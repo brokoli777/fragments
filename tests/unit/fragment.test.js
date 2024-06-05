@@ -251,9 +251,7 @@ describe('Fragment class', () => {
       await fragment.setData(Buffer.from('a'));
 
       await Fragment.delete('1234', fragment.id);
-      //Modified to use await since byId is async
-      await expect(Fragment.byId('1234', fragment.id)).rejects.toThrow();
-      //expect(() => Fragment.byId('1234', fragment.id)).rejects.toThrow();
+      expect(() => Fragment.byId('1234', fragment.id)).rejects.toThrow();
     });
   });
 });
