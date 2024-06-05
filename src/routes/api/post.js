@@ -1,10 +1,10 @@
 // src/routes/api/post.js
 const { createSuccessResponse } = require('../../response');
 const { createErrorResponse } = require('../../response');
-const { Fragment } = require('../../models/fragment');
+const { Fragment } = require('../../model/fragment');
 
 
-module.export = (req, res) => {  
+module.exports = (req, res) => {  
   
   if (!Buffer.isBuffer(req.body)) {
     res.status(400).json(
@@ -27,7 +27,7 @@ module.export = (req, res) => {
   fragment.save().then(() => {
     res.status(201).json(
       createSuccessResponse({
-        fragment,
+        fragment
       })
     );
   });

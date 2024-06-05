@@ -12,17 +12,36 @@ const {
   writeFragmentData,
   listFragments,
   deleteFragment,
-} = require('./data');
+} = require('./data/memory');
 
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
 
+    //console.log('Constructor called with:', { id, ownerId, created, updated, type, size });
+
+    if(!ownerId ) { 
+      //console.log('thrown! ownerId is required');
+      throw new Error('ownerId is required')
+    }else if (!type) {
+      //console.log('thrown! type is required');
+      throw new Error('type is required')
+    } else if(size < 0 || typeof size !== 'number') {
+      //console.log('thrown! size cannot be negative'); 
+      throw new Error('size cannot be negative')
+    }
+    else if (!Fragment.isSupportedType(type)) {
+      //console.log('thrown! unsupported media type');
+      throw new Error('unsupported media type');
+    }
+
     this.id = id || randomUUID();
     this.ownerId = ownerId;
-    this.created = created || JSON.stringify(new Date);
+    this.created = created || new Date().toISOString();
     this.updated = updated || this.created;
     this.type = type;
     this.size = size;
+
+    //console.log('Fragment created:', this);
 
   }
 
@@ -44,9 +63,24 @@ class Fragment {
    * @returns Promise<Fragment>
    */
   static async byId(ownerId, id) {
-    // TODO
-    //fragment data?
-    return await readFragment(ownerId, id);
+    
+    // if ((await this.byUser(ownerId).includes(id) )) {
+    //   throw new Error('Fragment not found');
+    // }
+
+    const userFragments = await listFragments(ownerId, false);
+    if (!userFragments.includes(id)) {
+      throw new Error('Fragment not found');
+    }
+
+    try {
+      const fragment = await readFragment(ownerId, id);
+      return fragment;
+    }
+    catch {
+      throw new Error("Unable to read Fragment data");
+    }
+   
   }
 
   /**
@@ -57,7 +91,12 @@ class Fragment {
    */
   static delete(ownerId, id) {
     // TODO
-    return deleteFragment(ownerId, id);
+    try {
+      return deleteFragment(ownerId, id);
+    }
+    catch {
+      throw new Error('Fragment not found');
+    }
   }
 
   /**
@@ -66,6 +105,7 @@ class Fragment {
    */
   save() {
     // TODO
+    this.updated = new Date().toISOString();
     return writeFragment(this);
   }
 
@@ -85,7 +125,11 @@ class Fragment {
    */
   async setData(data) {
     // TODO
+    if (!data || data.length === 0) {
+      throw new Error('data is required');
+    }
     this.size = data.length;
+    this.updated = new Date().toISOString();
     return writeFragmentData(this.ownerId, this.id, data);
   }
 
@@ -124,7 +168,7 @@ class Fragment {
    */
   static isSupportedType(value) {
     // TODO
-    const supportedTypes = ['text/plain'];
+    const supportedTypes = ['text/plain', 'text/plain; charset=utf-8'];
     return supportedTypes.includes(value);
   }
 }
