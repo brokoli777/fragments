@@ -5,7 +5,7 @@
 
 const auth = require('http-auth');
 //TEMP COMMENTED OUT FOR NOW
-// const passport = require('passport');
+//const passport = require('passport');
 const authPassport = require('http-auth-passport');
 const authorize = require('./auth-middleware');
 
@@ -24,5 +24,5 @@ module.exports.strategy = () =>
   );
 
 //TEMP COMMENTED OUT FOR NOW
-// module.exports.authenticate = () => passport.authenticate('http', { session: false });
+//module.exports.authenticate = () => passport.authenticate('http', { session: false });
 module.exports.authenticate = () => authorize('http');

@@ -114,7 +114,8 @@ class Fragment {
    * @returns Promise<Buffer>
    */
   getData() {
-    // TODO
+    // const fragment = this.byId(this.ownerId, this.id);
+    // return readFragmentData(fragment.ownerId, fragment.id);
     return readFragmentData(this.ownerId, this.id);
   }
 
