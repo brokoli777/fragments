@@ -4,25 +4,15 @@ const path = require('path');
 
 describe('Authentication Module Selection', () => {
   beforeAll(() => {
-    // Backup the original process.env object
+    // Backup original process.env 
     process.env = { ...process.env };
   });
 
   afterAll(() => {
-    // Restore the original process.env object
+    // Restore original process.env after testing
     process.env = { ...process.env };
   });
 
-  // test('should load Cognito auth module when AWS_COGNITO_POOL_ID and AWS_COGNITO_CLIENT_ID are set', () => {
-
-  //   process.env.AWS_COGNITO_POOL_ID = 'fake-pool-id';
-  //   process.env.AWS_COGNITO_CLIENT_ID = 'fake-client-id';
-
-  //   const authModule = require('../../src/auth');
-  //   // expect(authModule).toBe(require('../../src/auth/cognito'));
-  //   expect(authModule).toThrow();
-
-  // });
 
   test('should load Basic Auth module when HTPASSWD_FILE is set and not in production', () => {
 
@@ -45,7 +35,6 @@ describe('Authentication Module Selection', () => {
 
     jest.resetModules();
 
-    // expect(() => require('../../src/auth')).toThrow('missing env vars: no authorization configuration found');
     expect(() => require('../../src/auth')).toThrow('missing env vars: no authorization configuration found');
   });
 

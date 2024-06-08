@@ -3,9 +3,6 @@ const request = require('supertest');
 // Get our Express app object (we don't need the server part)
 const app = require('../../src/app');
 
-// const { createErrorResponse } = require('../../src/response');
-
-// jest.mock('../../src/response');
 
 describe('test 404 middleware', () => {
   test('should return HTTP 404 response', async () => {

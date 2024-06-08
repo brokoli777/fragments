@@ -38,13 +38,10 @@ module.exports = (req, res, next) => {
               res.status(415).json(createErrorResponse(415, 'Not allowed to convert to specified format'));
             }
           } else {
-            // Return the data with the original content type
+            // Return the data with original content type it had
             res.status(200).send(data);
           }
 
-          // res.status(200).send(
-          //   data.toString()
-          // );
         
       })})
       .catch((err) => {
@@ -67,9 +64,4 @@ module.exports = (req, res, next) => {
       });
   }
 
-  // res.status(200).json(
-  //   createSuccessResponse({
-  //     fragments: [],
-  //   })
-  // );
 };

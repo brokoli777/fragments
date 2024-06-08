@@ -11,19 +11,13 @@ module.exports = (req, res) => {
     return;
   }
 
-  // if (Fragment.isSupportedType(req.get('Content-Type')) === false) {
-  //   res.status(400).json(createErrorResponse(415, 'unsupported media type'));
-  //   return;
-  // }
-
-  const fragment = new Fragment({ ownerId: req.user, type: req.get('Content-Type') });
-
-  if (!Fragment.isSupportedType(fragment.type)) {
-  
+  if (Fragment.isSupportedType(req.get('Content-Type')) === false) {
     logger.error(`unsupported media type: ${fragment.type}`);
-    res.status(415).json(createErrorResponse(415, 'unsupported media type'));
+    res.status(400).json(createErrorResponse(415, 'unsupported media type'));
     return;
   }
+
+  const fragment = new Fragment({ ownerId: req.user, type: req.get('Content-Type') });
 
   fragment
     .setData(req.body)

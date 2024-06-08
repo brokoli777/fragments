@@ -27,7 +27,6 @@ describe('GET /v1/fragments', () => {
     expect(res.body.fragment.created).toBeTruthy();
     expect(res.body.fragment.updated).toBeTruthy();
     expect(res.body.fragment.id).toBeTruthy();
-    // expect(Array.isArray(res.body.fragments)).toBe(true);
   });
 
   //testing a post request without data
