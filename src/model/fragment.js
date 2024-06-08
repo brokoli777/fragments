@@ -140,7 +140,7 @@ class Fragment {
    * @returns {Array<string>} list of supported mime types
    */
   get formats() {
-    return ['text/plain'];
+     return ['text/plain'];
   }
 
   /**

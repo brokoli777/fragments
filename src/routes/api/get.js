@@ -10,40 +10,46 @@ const logger = require('../../logger');
 module.exports = (req, res, next) => {
   const expand = req.query.expand;
   const ownerId = req.user;
-  const id = req.params.id;
-  
+  const idExtension = req.params.id;
 
-  if (id) {
+  if (idExtension) {
+    logger.info(`GET /fragments/${idExtension} for user ${ownerId}`);
 
-    logger.info(`GET /fragments/${id} for user ${ownerId}`)
+    let id = '';
+    let extension = '';
+    if (idExtension.includes('.')) {
+      extension = idExtension.split('.')[1];
+      id = idExtension.split('.')[0];
+    } else {
+      id = idExtension;
+    }
 
-  let extension = '';
-  if (id.includes('.')) {
-    extension = id.split('.').pop();
-  }
+    logger.info(`Extension: ${extension}`);
+    logger.info(`ID: ${id}`);
 
     Fragment.byId(ownerId, id, expand)
-      .then(
-        (fragment) => {
+      .then((fragment) => {
         fragment.getData().then((data) => {
-
-          if (extension === 'txt') {
+          if (extension) {
             // Check if the fragment is text/plain
-            if (fragment.contentType === 'text/plain') {
-              res.status(200)
+            logger.info(`Fragment content type: ${fragment.mimeType}`);
+            if (fragment.mimeType === 'text/plain' && extension === 'txt') {
+              res
+                .status(200)
                 .header('Content-Type', 'text/plain')
                 .header('Content-Disposition', 'attachment; filename="fragment.txt"')
                 .send(data.toString());
             } else {
-              res.status(415).json(createErrorResponse(415, 'Not allowed to convert to specified format'));
+              res
+                .status(415)
+                .json(createErrorResponse(415, 'Not allowed to convert to specified format'));
             }
           } else {
             // Return the data with original content type it had
-            res.status(200).send(data);
+            res.status(200).send(data.toString());
           }
-
-        
-      })})
+        });
+      })
       .catch((err) => {
         logger.error(err);
         next(err);
@@ -63,5 +69,4 @@ module.exports = (req, res, next) => {
         res.status(500).json(createErrorResponse(500, 'ERROR: ' + err));
       });
   }
-
 };

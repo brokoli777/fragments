@@ -5,17 +5,21 @@ const { Fragment } = require('../../model/fragment');
 const logger = require('../../logger');
 
 module.exports = (req, res) => {
+
+  if (Fragment.isSupportedType(req.get('Content-Type')) === false) {
+    const type = req.get('Content-Type');
+    logger.error(`unsupported media type: ${type}`);
+    res.status(415).json(createErrorResponse(415, 'unsupported media type'));
+    return;
+  }
+
   if (!Buffer.isBuffer(req.body)) {
     logger.error('no buffer found in request body');
     res.status(400).json(createErrorResponse(400, 'no buffer found in request body'));
     return;
   }
 
-  if (Fragment.isSupportedType(req.get('Content-Type')) === false) {
-    logger.error(`unsupported media type: ${fragment.type}`);
-    res.status(400).json(createErrorResponse(415, 'unsupported media type'));
-    return;
-  }
+  
 
   const fragment = new Fragment({ ownerId: req.user, type: req.get('Content-Type') });
 

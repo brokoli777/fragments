@@ -4,7 +4,7 @@ const request = require('supertest');
 
 const app = require('../../src/app');
 
-describe('GET /v1/fragments', () => {
+describe('POST /v1/fragments', () => {
   // If the request is missing the Authorization header, it should be forbidden
   test('unauthenticated requests are denied', () => request(app).post('/v1/fragments').expect(401));
 
@@ -38,6 +38,32 @@ describe('GET /v1/fragments', () => {
     
     expect(res.statusCode).toBe(500);
     expect(res.body.status).toBe('error');
+  });
+
+  // If the Content-Type is not supported, it should return a 415 error
+  test('unsupported media type', async () => {
+    const res = await request(app)
+    .post('/v1/fragments')
+    .auth('user1@email.com', 'password1')
+    .set('Content-Type', 'application/unsupported')
+    .send(Buffer.from('hello world'));
+
+    expect(res.statusCode).toBe(415);
+    expect(res.body.status).toBe('error');
+    expect(res.body.error.message).toBe('unsupported media type');
+  });
+
+  // Location header is being set correctly
+  test('successful fragment creation sets Location header', async () => {
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/plain')
+      .send(Buffer.from('hello world'));
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('ok');
+    expect(res.header.location).toBeTruthy();
   });
 
   
