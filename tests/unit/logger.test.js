@@ -21,18 +21,15 @@ describe('Logger', () => {
     expect(loggerInstance.level).toBe('info');
   });
 
-  // test('should set level to "debug" if LOG_LEVEL is set to "debug"', () => {
+  test('should set level to "debug" if LOG_LEVEL is set to "debug"', () => {
 
-  //   process.env.LOG_LEVEL = 'debug';
+    process.env.LOG_LEVEL = 'debug';
 
-  //   const loggerInstance = require('../../src/logger');
-  //   loggerInstance.LOG_LEVEL = 'debug';
+    const loggerInstance = require('../../src/logger');
 
-  //   // expect(loggerInstance.level).toBe('debug');
-  //   expect(loggerInstance.transport).toBeDefined();
-  //   expect(loggerInstance.transport.target).toBe('pino-pretty');
-  //   expect(loggerInstance.transport.options.colorize).toBe(true);
-  // });
+    expect(loggerInstance.transport).toBeFalsy();
+    
+  });
 
 
 

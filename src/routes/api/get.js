@@ -3,6 +3,7 @@
 const { Fragment } = require('../../model/fragment');
 const { createSuccessResponse } = require('../../response');
 const { createErrorResponse } = require('../../response');
+const logger = require('../../logger');
 /**
  * Get a list of fragments for the current user
  */
@@ -10,43 +11,44 @@ module.exports = (req, res, next) => {
   const expand = req.query.expand;
   const ownerId = req.user;
   const id = req.params.id;
+  
 
   if (id) {
-    // Get a specific fragment for the current user
-    // Fragment.byId(ownerId, id)
-    //   .then((fragment) => {
-    //     res.status(200).json(
-    //       createSuccessResponse(
-    //         fragment
-    //       )
-    //     );
-    //   })
-    //   .catch((err) => {
-    //     res.status(500).json(createErrorResponse(500, 'ERROR: ' + err));
-    //   });
-    // Fragment.getData(ownerId, id)
-    //   .then((fragment) => {
-    //     res.status(200).json(
-    //       createSuccessResponse(
-    //         fragment
-    //       )
-    //     );
-    //   })
-    //   .catch((err) => {
-    //     res.status(500).json(createErrorResponse(500, 'ERROR: ' + err));
-    //   });
+
+    logger.info(`GET /fragments/${id} for user ${ownerId}`)
+
+  let extension = '';
+  if (id.includes('.')) {
+    extension = id.split('.').pop();
+  }
 
     Fragment.byId(ownerId, id, expand)
       .then(
         (fragment) => {
         fragment.getData().then((data) => {
-          res.status(200).send(
-            data.toString()
-          );
+
+          if (extension === 'txt') {
+            // Check if the fragment is text/plain
+            if (fragment.contentType === 'text/plain') {
+              res.status(200)
+                .header('Content-Type', 'text/plain')
+                .header('Content-Disposition', 'attachment; filename="fragment.txt"')
+                .send(data.toString());
+            } else {
+              res.status(415).json(createErrorResponse(415, 'Not allowed to convert to specified format'));
+            }
+          } else {
+            // Return the data with the original content type
+            res.status(200).send(data);
+          }
+
+          // res.status(200).send(
+          //   data.toString()
+          // );
         
       })})
       .catch((err) => {
-        // res.status(500).json(createErrorResponse(500, 'ERROR: ' + err));
+        logger.error(err);
         next(err);
       });
   } else {
@@ -60,6 +62,7 @@ module.exports = (req, res, next) => {
         );
       })
       .catch((err) => {
+        logger.error(err);
         res.status(500).json(createErrorResponse(500, 'ERROR: ' + err));
       });
   }
