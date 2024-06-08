@@ -6,7 +6,7 @@ const { createErrorResponse } = require('../../response');
 /**
  * Get a list of fragments for the current user
  */
-module.exports = (req, res) => {
+module.exports = (req, res, next) => {
   const expand = req.query.expand;
   const ownerId = req.user;
   const id = req.params.id;
@@ -46,7 +46,8 @@ module.exports = (req, res) => {
         
       })})
       .catch((err) => {
-        res.status(500).json(createErrorResponse(500, 'ERROR: ' + err));
+        // res.status(500).json(createErrorResponse(500, 'ERROR: ' + err));
+        next(err);
       });
   } else {
     // Get a list of fragments for the current user

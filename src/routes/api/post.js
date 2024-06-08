@@ -34,6 +34,6 @@ module.exports = (req, res) => {
       });
     })
     .catch((err) => {
-      res.status(500).json(createErrorResponse(500, 'ERROR: ' + err));
+      res.status(500).json(createErrorResponse(500, err));
     });
 };
