@@ -56,21 +56,9 @@ module.exports = (req, res, next) => {
 
             // Check if the fragment is text/plain
             logger.info(`Fragment content type: ${fragment.mimeType}`);
-            // if (fragment.mimeType === 'text/plain' && extension === 'txt') {
-            //   res
-            //     .status(200)
-            //     .header('Content-Type', 'text/plain')
-            //     .header('Content-Disposition', 'attachment; filename="fragment.txt"')
-            //     .send(data.toString());
-            // } else {
-            //   res
-            //     .status(415)
-            //     .json(createErrorResponse(415, 'Not allowed to convert to specified format'));
-            // }
 
             if(!fragment.formats.includes(getMimeType(extension))){
               res.status(415).json(createErrorResponse(415, 'Not allowed to convert to specified format'));
-              // throw new Error('Not allowed to convert to specified format');
             }
             else{
 
@@ -85,10 +73,10 @@ module.exports = (req, res, next) => {
                   .header('Content-Disposition', `attachment; filename="fragment.${extension}"`)
                   .send(convertedData);
               })
-              // .catch((err) => {
-              //   logger.error(err);
-              //   res.status(415).json(createErrorResponse(415, 'Not allowed to convert to specified format'));
-              // });
+              .catch((err) => {
+                logger.error(err);
+                res.status(415).json(createErrorResponse(415, 'Not allowed to convert to specified format'));
+              });
 }
           } else {
             // Return the data with original content type it had
@@ -152,12 +140,6 @@ module.exports = (req, res, next) => {
       throw new Error(`Conversion failed: ${error.message}`);
     }
 
-    // if (mimeType === 'text/plain' && extension === 'txt') {
-    //   return data;
-    // }
-    // else if (mimeType === 'text/markdown' && extension === 'html') {
-    //   return marked(data);
-    // }
   };
 
   const getMimeType = (extension) => {
