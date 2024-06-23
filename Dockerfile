@@ -1,41 +1,42 @@
 #File for dockerizing the fragments server
+# Stage 1: Build
+FROM node:20-alpine3.19 AS build
 
-# Use node version 20.10.0
-FROM node:20.10.0
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy src to /app/src/
+COPY ./src ./src
+# Copy our HTPASSWD file
+COPY ./tests/.htpasswd ./tests/.htpasswd
+
+# Stage 2: Production
+FROM node:20-alpine3.19
 
 LABEL maintainer="Bregwin Jogi <bjogi1@myseneca.ca>"
 LABEL description="Fragments node.js microservice"
 
-# We default to use port 8080 in our service
+# Set environment variables
 ENV PORT=8080
-
+ENV NODE_ENV=production
 # Reduce npm spam when installing within Docker
-# https://docs.npmjs.com/cli/v8/using-npm/config#loglevel
 ENV NPM_CONFIG_LOGLEVEL=warn
-
-# Disable colour when run inside Docker
-# https://docs.npmjs.com/cli/v8/using-npm/config#color
 ENV NPM_CONFIG_COLOR=false
 
-# Use /app as our working directory
 WORKDIR /app
 
-# Option 2: relative path - Copy the package.json and package-lock.json
-# files into the working dir (/app).  NOTE: this requires that we have
-# already set our WORKDIR in a previous step.
-COPY package*.json ./
+# Copy built artifacts from the build stage
+COPY --from=build /app ./
 
-# Install node dependencies defined in package-lock.json
-RUN npm install
+# Set user to node
+USER node
+COPY --chown=node:node . /usr/src/app
 
-# Copy src to /app/src/
-COPY ./src ./src
-
-# Copy our HTPASSWD file
-COPY ./tests/.htpasswd ./tests/.htpasswd
-
-# Start the container by running our server
-CMD npm start
+# Start the server
+CMD ["node", "src/index.js"]
 
 # We run our service on port 8080
 EXPOSE 8080

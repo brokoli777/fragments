@@ -140,7 +140,25 @@ class Fragment {
    * @returns {Array<string>} list of supported mime types
    */
   get formats() {
-     return ['text/plain'];
+    //  return ['text/plain'];
+    if(this.mimeType === 'text/plain') {
+      return ['text/plain'];
+    }
+    else if(this.mimeType === 'text/markdown') {
+      return ['text/markdown', 'text/html', 'text/plain'];
+    }
+    else if(this.mimeType === 'text/html') {
+      return ['text/html', 'text/plain'];
+    }
+    else if(this.mimeType === 'text/csv'){
+      return ['text/csv', 'text/plain', 'application/json'];
+    }
+    else if(this.mimeType === 'application/json') {
+      return ['application/json', 'application/yaml', 'text/plain'];
+    }
+    else {
+      return [];
+    }
   }
 
   /**
@@ -149,7 +167,7 @@ class Fragment {
    * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
    */
   static isSupportedType(value) {
-    const supportedTypes = ['text/plain', 'text/plain; charset=utf-8'];
+    const supportedTypes = ['text/plain', 'text/plain; charset=utf-8', 'text/markdown','text/html', 'text/csv','application/json'];
     return supportedTypes.includes(value);
   }
 }
