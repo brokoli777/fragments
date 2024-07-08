@@ -4,6 +4,8 @@ const request = require('supertest');
 
 const app = require('../../src/app');
 
+const { Fragment } = require('../../src/model/fragment');
+
 describe('GET /v1/fragments', () => {
   // If the request is missing the Authorization header, it should be forbidden
   test('unauthenticated requests are denied', () => request(app).get('/v1/fragments').expect(401));
@@ -22,27 +24,30 @@ describe('GET /v1/fragments', () => {
 
   // Test for getting a fragment by id
   test('authenticated users can get a fragment by id', async () => {
-
     const postRequest = await request(app)
-    .post('/v1/fragments')
-    .auth('user1@email.com', 'password1')
-    .set('Content-Type', 'text/plain')
-    .send(Buffer.from('hello world'));
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/plain')
+      .send(Buffer.from('hello world'));
 
-    const res = await request(app).get(`/v1/fragments/${postRequest.body.fragment.id}`).auth('user1@email.com', 'password1');
-    
+    const res = await request(app)
+      .get(`/v1/fragments/${postRequest.body.fragment.id}`)
+      .auth('user1@email.com', 'password1');
+
     expect(res.statusCode).toBe(200);
     expect(res.text).toBe('hello world');
   });
 
   test('authenticated users can get a fragment by id with .txt extension', async () => {
     const postRequest = await request(app)
-    .post('/v1/fragments')
-    .auth('user1@email.com', 'password1')
-    .set('Content-Type', 'text/plain')
-    .send(Buffer.from('test 123'));
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/plain')
+      .send(Buffer.from('test 123'));
 
-    const res = await request(app).get(`/v1/fragments/${postRequest.body.fragment.id}.txt`).auth('user1@email.com', 'password1');
+    const res = await request(app)
+      .get(`/v1/fragments/${postRequest.body.fragment.id}.txt`)
+      .auth('user1@email.com', 'password1');
 
     expect(res.statusCode).toBe(200);
     expect(res.headers['content-type']).toBe('text/plain; charset=utf-8');
@@ -50,18 +55,61 @@ describe('GET /v1/fragments', () => {
     expect(res.text).toBe('test 123');
   });
 
-  test('error when fragment cannot be converted to .txt', async () => {
+  test('error when fragment cannot be converted to invalid conversion type', async () => {
     const postRequest = await request(app)
-    .post('/v1/fragments')
-    .auth('user1@email.com', 'password1')
-    .set('Content-Type', 'text/plain')
-    .send(Buffer.from('hihihi'));
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/plain')
+      .send(Buffer.from('hihihi'));
 
-    const res = await request(app).get(`/v1/fragments/${postRequest.body.fragment.id}.html`).auth('user1@email.com', 'password1');
+    const res = await request(app)
+      .get(`/v1/fragments/${postRequest.body.fragment.id}.html`)
+      .auth('user1@email.com', 'password1');
     expect(res.statusCode).toBe(415);
     expect(res.body.status).toBe('error');
     expect(res.body.error.message).toBe('Not allowed to convert to specified format');
   });
 
-  
+  test('Convert Markdown to HTML', async () => {
+    const markdownContent = '## Hey there\n\nHello, **Yooo**!';
+
+    const fragment = new Fragment({
+      ownerId: '11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a',
+      type: 'text/markdown',
+    });
+
+    await fragment.save();
+
+    // Set data for the fragment
+    await fragment.setData(Buffer.from(markdownContent));
+
+    // get the fragment as HTML
+    const getRes = await request(app)
+      .get(`/v1/fragments/${fragment.id}.html`)
+      .auth('user1@email.com', 'password1');
+
+    expect(getRes.statusCode).toBe(200);
+    expect(getRes.headers['content-type']).toBe('text/html; charset=utf-8');
+    expect(getRes.text).toContain('<h2>Hey there</h2>\n<p>Hello, <strong>Yooo</strong>!</p>\n');
+  });
+
+  test('Error on unsupported conversion type', async () => {
+    const markdownContent = '## Unsupported';
+
+    const fragment = new Fragment({
+      ownerId: '11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a',
+      type: 'text/markdown',
+    });
+
+    await fragment.setData(Buffer.from(markdownContent));
+    await fragment.save();
+    
+    const getRes = await request(app)
+      .get(`/v1/fragments/${fragment.id}.xml`)
+      .auth('user1@email.com', 'password1');
+
+    expect(getRes.statusCode).toBe(415);
+    expect(getRes.body.status).toBe('error');
+    expect(getRes.body.error.message).toBe('Not allowed to convert to specified format');
+  });
 });

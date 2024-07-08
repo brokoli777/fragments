@@ -5,8 +5,10 @@ const { createSuccessResponse } = require('../../response');
 const { createErrorResponse } = require('../../response');
 const logger = require('../../logger');
 //conversion libraries
-const marked = require('marked');
-const yaml = require('js-yaml');
+const markdownit = require('markdown-it');
+
+//TODO: Add support for other text and JSON conversion
+// const yaml = require('js-yaml');
 
 const extensionToMimeType = {
   // Text types
@@ -64,13 +66,13 @@ module.exports = (req, res, next) => {
             convertFileType(fragment.mimeType, data, extension)
               .then((convertedData) => {
 
-                const mimeType = getMimeType(extension);
-
-                res
+                const mimeType = getMimeType(extension)
+                  res
                   .status(200)
                   .header('Content-Type', mimeType)
                   .header('Content-Disposition', `attachment; filename="fragment.${extension}"`)
                   .send(convertedData);
+                
               })
               .catch((err) => {
                 logger.error(err);
@@ -78,7 +80,7 @@ module.exports = (req, res, next) => {
               });
 }
           } else {
-            
+
             // Return the data with original content type it had
             res.status(200).send(data.toString());
           }
@@ -106,46 +108,45 @@ module.exports = (req, res, next) => {
 
   const convertFileType = async (mimeType, data, extension) => {
     data = data.toString();
-
-    try {
-      switch (mimeType) {
-        case 'text/plain':
-          if (extension === 'txt') return data;
-          break;
-        case 'text/markdown':
-          if (extension === 'html') {
-            return marked(data);
-          }
-          if (extension === 'txt') return data;
-          break;
-        case 'application/json':
-          if (extension === 'yaml' || extension === 'yml') {
-            const jsonObject = JSON.parse(data);
-            return yaml.dump(jsonObject);
-          }
-          if (extension === 'txt') return data;
-          break;
-        case 'application/yaml':
-          if (extension === 'json') {
-            const yamlObject = yaml.load(data);
-            return JSON.stringify(yamlObject);
-          }
-          if (extension === 'txt') return data;
-          break;
-
-        default:
-          throw new Error('Not allowed to convert to specified format');
+  
+    if (mimeType === 'text/plain') {
+      if (extension === 'txt') return data;
+    } else if (mimeType === 'text/markdown') {
+      if (extension === 'html') {
+        const md = markdownit();
+        return md.render(data);
       }
-    } catch (error) {
-      throw new Error(`Conversion failed: ${error.message}`);
+      if (extension === 'txt') return data;
+    } 
+    
+    //TODO: Add support for other text and JSON conversion
+    //Partial Implementation for Assigment 3
+    // else if (mimeType === 'application/json') {
+    //   if (extension === 'yaml' || extension === 'yml') {
+    //     const jsonObject = JSON.parse(data);
+    //     return yaml.dump(jsonObject);
+    //   }
+    //   if (extension === 'txt') return data;
+    // } else if (mimeType === 'application/yaml') {
+    //   if (extension === 'json') {
+    //     const yamlObject = yaml.load(data);
+    //     return JSON.stringify(yamlObject);
+    //   }
+    //   if (extension === 'txt') return data;
+    // } 
+    
+    else {
+      throw new Error(`Conversion failed: Unsupported conversion (${mimeType} to ${extension})`);
     }
-
+  
+    
   };
+  
 
   const getMimeType = (extension) => {
     const mimeType = extensionToMimeType[extension.toLowerCase()];
     if (!mimeType) {
-      throw new Error(`MIME type for extension ${extension} is not supported.`);
+      return null;
     }
     return mimeType;
   };
