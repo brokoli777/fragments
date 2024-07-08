@@ -19,8 +19,6 @@ module.exports = (req, res) => {
     return;
   }
 
-  
-
   const fragment = new Fragment({ ownerId: req.user, type: req.get('Content-Type') });
 
   fragment

@@ -17,7 +17,7 @@ const extensionToMimeType = {
   'json': 'application/json',
   'yaml': 'application/yaml',
   'yml': 'application/yaml',
-  // Image types
+  // Image types (Conversion not supported yet)
   'png': 'image/png',
   'jpg': 'image/jpeg',
   'jpeg': 'image/jpeg',
@@ -54,7 +54,6 @@ module.exports = (req, res, next) => {
         fragment.getData().then((data) => {
           if (extension) {
 
-            // Check if the fragment is text/plain
             logger.info(`Fragment content type: ${fragment.mimeType}`);
 
             if(!fragment.formats.includes(getMimeType(extension))){
@@ -79,6 +78,7 @@ module.exports = (req, res, next) => {
               });
 }
           } else {
+            
             // Return the data with original content type it had
             res.status(200).send(data.toString());
           }

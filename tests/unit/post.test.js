@@ -66,5 +66,39 @@ describe('POST /v1/fragments', () => {
     expect(res.header.location).toBeTruthy();
   });
 
+  // Able to create text/html fragment creation
+  test('authenticated users can create text/html fragment', async () => {
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/html')
+      .send(Buffer.from('<p>Hello World</p>'));
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('ok');
+    expect(res.body.fragment.ownerId).toBeTruthy();
+    expect(res.body.fragment.type).toBe('text/html');
+    expect(res.body.fragment.created).toBeTruthy();
+    expect(res.body.fragment.updated).toBeTruthy();
+    expect(res.body.fragment.id).toBeTruthy();
+  });
+
+  // Able to create application/json fragment 
+  test('authenticated users can create application/json fragment', async () => {
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'application/json')
+      .send(Buffer.from(JSON.stringify({ key: 'value' })));
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('ok');
+    expect(res.body.fragment.ownerId).toBeTruthy();
+    expect(res.body.fragment.type).toBe('application/json');
+    expect(res.body.fragment.created).toBeTruthy();
+    expect(res.body.fragment.updated).toBeTruthy();
+    expect(res.body.fragment.id).toBeTruthy();
+  });
+
   
 });
