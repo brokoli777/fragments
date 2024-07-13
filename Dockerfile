@@ -39,4 +39,4 @@ COPY --chown=node:node . /usr/src/app
 CMD ["node", "src/index.js"]
 
 # We run our service on port 8080
-EXPOSE 8080
+EXPOSE $PORT
