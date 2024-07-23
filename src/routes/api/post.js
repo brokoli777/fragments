@@ -27,7 +27,7 @@ module.exports = (req, res) => {
       fragment.save().then(() => {
 
         //Setting Location Header
-        const hostName = process.env.API_URL || req.headers.host;
+        const hostName = req.headers.host;
         const locationURL = new URL("/v1/fragments/" + fragment.id, `http://${hostName}`);
         res.location(locationURL.toString());
 

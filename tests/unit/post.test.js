@@ -13,7 +13,7 @@ describe('POST /v1/fragments', () => {
     request(app).post('/v1/fragments').auth('invalid@email.com', 'incorrect_password').expect(401));
 
   // Using a valid username/password pair should save a new fragment and return a successful response
-  test('authenticated users get a fragments array', async () => {
+  test('authenticated users get successful response when creating valid fragment', async () => {
     const res = await request(app)
     .post('/v1/fragments')
     .auth('user1@email.com', 'password1')

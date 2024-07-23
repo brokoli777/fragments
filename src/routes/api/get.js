@@ -82,7 +82,7 @@ module.exports = (req, res, next) => {
           } else {
 
             // Return the data with original content type it had
-            res.status(200).send(data.toString());
+            res.status(200).header('Content-Type', fragment.mimeType).send(data.toString());
           }
         });
       })

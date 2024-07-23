@@ -6,7 +6,7 @@ Content-Type: application/json
 [BasicAuth]
 user1@email.com:password1
 
-`{"key": "value"}`
+`{"hi": "something"}`
 
 # We expect to get back an HTTP 201
 HTTP/1.1 201
@@ -24,6 +24,6 @@ GET {{url}}
 user1@email.com:password1
 
 HTTP/1.1 200
-Content-Type: application/json
+Content-Type: application/json; charset=utf-8
 [Asserts]
-body == '{"key": "value"}'
+body == "{\"hi\": \"something\"}"
