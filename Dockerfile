@@ -31,10 +31,6 @@ WORKDIR /app
 # Copy built artifacts from the build stage
 COPY --from=build /app ./
 
-# Set user to node
-USER node
-COPY --chown=node:node . /usr/src/app
-
 # Start the server
 CMD ["node", "src/index.js"]
 

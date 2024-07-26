@@ -31,7 +31,7 @@ const extensionToMimeType = {
 /**
  * Get a list of fragments for the current user
  */
-module.exports = (req, res, next) => {
+module.exports = (req, res) => {
   const expand = req.query.expand;
   const ownerId = req.user;
   const idExtension = req.params.id;
@@ -88,7 +88,8 @@ module.exports = (req, res, next) => {
       })
       .catch((err) => {
         logger.error(err);
-        next(err);
+        // next(err);
+        res.status(404).json(createErrorResponse(404, "Fragment not found"));
       });
   } else {
     // Get a list of fragments for the current user
