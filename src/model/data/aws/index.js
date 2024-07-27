@@ -1,12 +1,7 @@
-// src/model/data/index.js
+// src/model/data/aws/index.js
 
-// If the environment sets an AWS Region, we'll use AWS backend
-// services (S3, DynamoDB); otherwise, we'll use an in-memory db.
-module.exports = process.env.AWS_REGION ? require('./aws') : require('../memory');
+const logger = require('../../../logger');
 
-logger.info(`Using ${process.env.AWS_REGION ? 'AWS' : 'in-memory'} backend for data`);
-
-const logger = require('../../logger');
 const s3Client = require('./s3Client');
 const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
