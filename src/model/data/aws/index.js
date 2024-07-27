@@ -4,6 +4,8 @@
 // services (S3, DynamoDB); otherwise, we'll use an in-memory db.
 module.exports = process.env.AWS_REGION ? require('./aws') : require('./memory');
 
+logger.info(`Using ${process.env.AWS_REGION ? 'AWS' : 'in-memory'} backend for data`);
+
 const logger = require('../../logger');
 const s3Client = require('./s3Client');
 const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
@@ -41,8 +43,10 @@ async function writeFragmentData(ownerId, id, data) {
   const command = new PutObjectCommand(params);
 
   try {
+    logger.info({ params }, 'S3- Attempting to upload fragment data to S3');
     // Use our client to send the command
     await s3Client.send(command);
+    logger.info({ Bucket: params.Bucket, Key: params.Key }, 'Successfully uploaded fragment data to S3');
   } catch (err) {
     // If anything goes wrong, log enough info that we can debug
     const { Bucket, Key } = params;
