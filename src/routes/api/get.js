@@ -53,6 +53,9 @@ module.exports = (req, res) => {
 
     Fragment.byId(ownerId, id, expand)
       .then((fragment) => {
+
+        logger.info(`Fragment found: ${fragment.id}`);
+
         fragment.getData().then((data) => {
           if (extension) {
 

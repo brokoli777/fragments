@@ -3,6 +3,8 @@
 services:
   # Fragments microservice API server
   fragments:
+    # Container name
+    container_name: fragments
     # Use a proper init process (tini)
     init: true
     # Build the Docker Image using the Dockerfile
@@ -15,7 +17,7 @@ services:
       # Use Basic Auth (for running tests, CI)
       - HTPASSWD_FILE=tests/.htpasswd
       # Use the LOG_LEVEL set in the host environment, or default to info
-      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
       - AWS_REGION=us-east-1
       # Use the LocalStack endpoint vs. AWS for S3 AWS SDK clients.
       # NOTE: we use Docker's internal network to the localstack container
@@ -27,6 +29,10 @@ services:
       # something else is defined in the env.
       - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME:-fragments}
       - AWS_DYNAMODB_TABLE_NAME=${AWS_DYNAMODB_TABLE_NAME:-fragments}
+      #TEMP 
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_SESSION_TOKEN=test
     # Ports to publish
     ports:
       - '8080:8080'

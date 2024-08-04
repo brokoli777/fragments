@@ -13,6 +13,7 @@ const {
   listFragments,
   deleteFragment,
 } = require('./data');
+const logger = require('../logger');
 
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
@@ -56,17 +57,29 @@ class Fragment {
    */
   static async byId(ownerId, id) {
 
-    const userFragments = await listFragments(ownerId, false);
-    if (!userFragments.includes(id)) {
-      throw new Error('Fragment not found');
-    }
+    logger.info(`inside byId function`);
+    // const userFragments = await listFragments(ownerId, false);
+    // if (!userFragments.includes(id)) {
+    //   throw new Error('Fragment not found');
+    // }
+
+    // try {
+    //   const fragment = await readFragment(ownerId, id);
+    //   logger.info(`inside try block of byId function`, fragment);
+    //   return fragment;
+    // }
+    // catch {
+    //   throw new Error("Unable to read Fragment data");
+    // }
 
     try {
-      const fragment = await readFragment(ownerId, id);
+      const fragmentInfo = await readFragment(ownerId, id);
+      const fragment = new Fragment(fragmentInfo);
       return fragment;
     }
     catch {
-      throw new Error("Unable to read Fragment data");
+      logger.error('Fragment not found');
+      throw new Error('Fragment not found');
     }
    
   }
