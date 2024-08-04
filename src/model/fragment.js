@@ -58,20 +58,6 @@ class Fragment {
   static async byId(ownerId, id) {
 
     logger.info(`inside byId function`);
-    // const userFragments = await listFragments(ownerId, false);
-    // if (!userFragments.includes(id)) {
-    //   throw new Error('Fragment not found');
-    // }
-
-    // try {
-    //   const fragment = await readFragment(ownerId, id);
-    //   logger.info(`inside try block of byId function`, fragment);
-    //   return fragment;
-    // }
-    // catch {
-    //   throw new Error("Unable to read Fragment data");
-    // }
-
     try {
       const fragmentInfo = await readFragment(ownerId, id);
       const fragment = new Fragment(fragmentInfo);

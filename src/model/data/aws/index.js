@@ -109,7 +109,6 @@ async function listFragments(ownerId, expand = false) {
 
   try {
 
-    logger.info("Inside try block ---");
     // Wait for the data to come back from AWS
     const data = await ddbDocClient.send(command);
 
