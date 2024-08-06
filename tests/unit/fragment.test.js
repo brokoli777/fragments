@@ -9,10 +9,10 @@ const validTypes = [
   `text/markdown`,
   `text/html`,
   `application/json`,
-  // `image/png`,
-  // `image/jpeg`,
-  // `image/webp`,
-  // `image/gif`,
+  `image/png`,
+  `image/jpeg`,
+  `image/webp`,
+  `image/gif`,
 
 ];
 
@@ -248,7 +248,6 @@ describe('Fragment class', () => {
       await fragment.setData(Buffer.from('a'));
 
       await Fragment.delete('1234', fragment.id);
-      //expect(() => Fragment.byId('1234', fragment.id)).rejects.toThrow();
     });
   });
 });

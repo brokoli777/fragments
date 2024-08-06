@@ -8,16 +8,25 @@ module.exports = (req, res) => {
   const ownerId = req.user;
   const id = req.params.id;
 
-  logger.info(`inside delete route`);
+  Fragment.byUser(ownerId).then((fragmentsList) => {
 
-  try{
-    Fragment.delete(ownerId, id);
-    logger.info(`Fragment ${id} deleted for user ${ownerId}`);
-    res.status(200).json(createSuccessResponse());
+  if (!fragmentsList.includes(id)) {
+    logger.error(`Fragment ${id} not found for user ${ownerId}`);
+    res.status(404).json(createErrorResponse(404, 'Fragment not found'));
+    return;
+  }else{
+    try{
+      Fragment.delete(ownerId, id);
+      logger.info(`Fragment ${id} deleted for user ${ownerId}`);
+      res.status(200).json(createSuccessResponse());
+    }
+    catch (err) {
+      logger.error(err);
+      res.status(500).json(createErrorResponse(500, err));
+    }
   }
-  catch (err) {
-    logger.error(err);
-    res.status(500).json(createErrorResponse(500, err));
-  }
+  });
+
+  
 
 }

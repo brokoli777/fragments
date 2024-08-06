@@ -41,6 +41,13 @@ async function listFragments(ownerId, expand = false) {
 
 // Delete a fragment's metadata and data from memory db. Returns a Promise
 function deleteFragment(ownerId, id) {
+
+  if(!metadata.get(ownerId, id)){
+    throw new Error('Fragment not found');
+  }
+  
+  logger.debug(`MEMORYDB - Deleting fragment ${id} from memory db`);
+
   return Promise.all([
     // Delete metadata
     metadata.del(ownerId, id),

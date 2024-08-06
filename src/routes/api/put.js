@@ -9,6 +9,8 @@ module.exports = (req, res) => {
   const ownerId = req.user;
   const id = req.params.id;
 
+  logger.info(`PUT /fragments/${id} for user ${ownerId}`);
+
   if (Fragment.isSupportedType(req.get('Content-Type')) === false) {
     const type = req.get('Content-Type');
     logger.error(`unsupported media type: ${type}`);
@@ -16,7 +18,7 @@ module.exports = (req, res) => {
     return;
   }
 
-  if (!Buffer.isBuffer(req.body)) {
+  if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
     logger.error('no buffer found in request body');
     res.status(400).json(createErrorResponse(400, 'no buffer found in request body'));
     return;

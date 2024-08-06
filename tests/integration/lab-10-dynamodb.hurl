@@ -66,7 +66,7 @@ jsonpath "$.fragment.id" == "{{fragment2_id}}"
 jsonpath "$.fragment.type" == "text/markdown"
 jsonpath "$.fragment.size" == 22
 
-# 5. GET all fragments for the authorized user
+# GET all fragments for the authorized user
 GET http://localhost:8080/v1/fragments
 [BasicAuth]
 user1@email.com:password1
@@ -79,7 +79,7 @@ jsonpath "$.status" == "ok"
 jsonpath "$.fragments" includes "{{fragment1_id}}"
 jsonpath "$.fragments" includes "{{fragment2_id}}"
 
-# 6. DELETE the first fragment
+# DELETE the first fragment
 DELETE {{fragment1_url}}
 [BasicAuth]
 user1@email.com:password1

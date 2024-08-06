@@ -77,6 +77,7 @@ class Fragment {
    * @returns Promise<void>
    */
   static delete(ownerId, id) {
+
     try {
       return deleteFragment(ownerId, id);
     }
