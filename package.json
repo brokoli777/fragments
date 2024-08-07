@@ -38,9 +38,11 @@
     "compression": "^1.7.4",
     "content-type": "^1.0.5",
     "cors": "^2.8.5",
+    "csvtojson": "^2.0.10",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "helmet": "^7.1.0",
+    "html-to-text": "^9.0.5",
     "http-auth": "^4.2.0",
     "http-auth-passport": "^1.0.7",
     "js-yaml": "^4.1.0",
@@ -50,6 +52,7 @@
     "pino": "^9.0.0",
     "pino-http": "^10.1.0",
     "pino-pretty": "^11.0.0",
+    "sharp": "^0.33.4",
     "stoppable": "^1.1.0"
   }
 }

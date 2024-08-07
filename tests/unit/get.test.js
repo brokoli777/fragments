@@ -5,6 +5,7 @@ const request = require('supertest');
 const app = require('../../src/app');
 
 const { Fragment } = require('../../src/model/fragment');
+const sharp = require('sharp');
 
 describe('GET /v1/fragments', () => {
   // If the request is missing the Authorization header, it should be forbidden
@@ -112,4 +113,147 @@ describe('GET /v1/fragments', () => {
     expect(getRes.body.status).toBe('error');
     expect(getRes.body.error.message).toBe('Not allowed to convert to specified format');
   });
+
+
+  test('Convert HTML to Text', async () => {
+    const htmlContent = '<p>Hello World</p>';
+  
+    const fragment = new Fragment({
+      ownerId: '11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a',
+      type: 'text/html',
+    });
+  
+    await fragment.save();
+    await fragment.setData(Buffer.from(htmlContent));
+  
+    const getRes = await request(app)
+      .get(`/v1/fragments/${fragment.id}.txt`)
+      .auth('user1@email.com', 'password1');
+  
+    expect(getRes.statusCode).toBe(200);
+    expect(getRes.headers['content-type']).toBe('text/plain; charset=utf-8');
+    expect(getRes.text).toContain('Hello World');
+  });
+  
+  test('Convert CSV to JSON', async () => {
+    const csvContent = 'name,age\nJohn,30\nDoe,40';
+  
+    const fragment = new Fragment({
+      ownerId: '11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a',
+      type: 'text/csv',
+    });
+  
+    await fragment.save();
+    await fragment.setData(Buffer.from(csvContent));
+  
+    const getRes = await request(app)
+      .get(`/v1/fragments/${fragment.id}.json`)
+      .auth('user1@email.com', 'password1');
+  
+    expect(getRes.statusCode).toBe(200);
+    expect(getRes.headers['content-type']).toBe('application/json; charset=utf-8');
+    expect(getRes.body).toEqual([{ name: 'John', age: '30' }, { name: 'Doe', age: '40' }]);
+  });
+  
+  test('Convert JSON to YAML', async () => {
+    const jsonContent = JSON.stringify({ name: 'John', age: 30 });
+  
+    const fragment = new Fragment({
+      ownerId: '11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a',
+      type: 'application/json',
+    });
+  
+    await fragment.save();
+    await fragment.setData(Buffer.from(jsonContent));
+  
+    const getRes = await request(app)
+      .get(`/v1/fragments/${fragment.id}.yaml`)
+      .auth('user1@email.com', 'password1');
+  
+    expect(getRes.statusCode).toBe(200);
+    expect(getRes.headers['content-type']).toBe('application/yaml; charset=utf-8');
+    expect(getRes.text).toContain('name: John\nage: 30\n');
+  });
+  
+  test('Convert PNG to JPEG', async () => {
+    const imageBuffer = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 4,
+        background: { r: 255, g: 0, b: 0, alpha: 1 },
+      },
+    }).png().toBuffer();
+  
+    const fragment = new Fragment({
+      ownerId: '11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a',
+      type: 'image/png',
+    });
+  
+    await fragment.save();
+    await fragment.setData(imageBuffer.toString('base64'));
+  
+    const getRes = await request(app)
+      .get(`/v1/fragments/${fragment.id}.jpg`)
+      .auth('user1@email.com', 'password1');
+  
+    expect(getRes.statusCode).toBe(200);
+    expect(getRes.headers['content-type']).toBe('image/jpeg');
+  });
+
+  test('Getting image file type as the same format', async () => {
+    const imageBuffer = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 4,
+        background: { r: 255, g: 0, b: 0, alpha: 1 },
+      },
+    }).png().toBuffer();
+  
+    const fragment = new Fragment({
+      ownerId: '11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a',
+      type: 'image/png',
+    });
+  
+    await fragment.save();
+    await fragment.setData(imageBuffer.toString('base64'));
+  
+    const getRes = await request(app)
+      .get(`/v1/fragments/${fragment.id}`)
+      .auth('user1@email.com', 'password1');
+
+    expect(getRes.statusCode).toBe(200);
+    expect(getRes.headers['content-type']).toBe('image/png; charset=utf-8');
+  });
+  
+  
+  test('Convert WebP to GIF', async () => {
+    const webpBuffer = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 4,
+        background: { r: 0, g: 255, b: 0, alpha: 1 },
+      },
+    }).webp().toBuffer();
+  
+    const fragment = new Fragment({
+      ownerId: '11d4c22e42c8f61feaba154683dea407b101cfd90987dda9e342843263ca420a',
+      type: 'image/webp',
+    });
+  
+    await fragment.save();
+    // Save the WebP buffer as a Base64 string
+    await fragment.setData(webpBuffer.toString('base64'));
+  
+    const getRes = await request(app)
+      .get(`/v1/fragments/${fragment.id}.gif`)
+      .auth('user1@email.com', 'password1');
+  
+    expect(getRes.statusCode).toBe(200);
+    expect(getRes.headers['content-type']).toBe('image/gif');
+  });
+  
+  
 });

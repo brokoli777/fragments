@@ -156,6 +156,12 @@ class Fragment {
     else if(this.mimeType === 'application/json') {
       return ['application/json', 'application/yaml', 'text/plain'];
     }
+    else if(this.mimeType === 'application/yaml') {
+      return ['application/yaml', 'text/plain'];
+    }
+    else if(this.mimeType === 'image/png' || this.mimeType === 'image/jpeg' || this.mimeType === 'image/webp' || this.mimeType === 'image/avif' || this.mimeType === 'image/gif') {
+      return ['image/png', 'image/jpeg', 'image/webp', 'image/avif', 'image/gif'];
+    }
     else {
       return [];
     }
@@ -167,7 +173,9 @@ class Fragment {
    * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
    */
   static isSupportedType(value) {
-    const supportedTypes = ['text/plain', 'text/plain; charset=utf-8', 'text/markdown','text/html', 'text/csv','application/json', 'application/yaml'];
+    const supportedTypes = ['text/plain', 'text/plain; charset=utf-8', 'text/markdown','text/html', 'text/csv','application/json', 'application/yaml'
+      ,"image/png", "image/jpeg", "image/webp", "image/avif", "image/gif"
+    ];
     return supportedTypes.includes(value);
   }
 }
