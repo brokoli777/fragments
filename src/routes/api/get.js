@@ -83,7 +83,7 @@ module.exports = (req, res) => {
             }
           } else {
             // Return the data with original content type it had
-            res.status(200).header('Content-Type', fragment.mimeType).send(data.toString());
+            res.status(200).header('Content-Type', fragment.mimeType).send(data);
           }
         });
       })
@@ -108,37 +108,8 @@ module.exports = (req, res) => {
       });
   }
 
-  // const convertFileType = async (mimeType, data, extension) => {
-  //   data = data.toString();
-
-  //   if (mimeType === 'text/plain') {
-  //     if (extension === 'txt') return data;
-  //   } else if (mimeType === 'text/markdown') {
-  //     if (extension === 'html') {
-  //       const md = markdownit();
-  //       return md.render(data);
-  //     }
-  //     if (extension === 'txt') return data;
-  //   } else if (mimeType === 'application/json') {
-  //     if (extension === 'yaml' || extension === 'yml') {
-  //       const jsonObject = JSON.parse(data);
-  //       return yaml.dump(jsonObject);
-  //     }
-  //     if (extension === 'txt') return data;
-  //   } else if (mimeType === 'application/yaml') {
-  //     if (extension === 'json') {
-  //       const yamlObject = yaml.load(data);
-  //       return JSON.stringify(yamlObject);
-  //     }
-  //     if (extension === 'txt') return data;
-  //   }
-  //   else {
-  //     throw new Error(`Conversion failed: Unsupported conversion (${mimeType} to ${extension})`);
-  //   }
-  // };
-
   const convertFileType = async (mimeType, bufferData, extension) => {
-    const data = bufferData.toString();
+    const data = bufferData
 
     if (mimeType === 'text/plain') {
       if (extension === 'txt') return data;
@@ -170,7 +141,7 @@ module.exports = (req, res) => {
       }
       if (extension === 'txt' || extension == 'csv') return data;
     } else if (mimeType.startsWith('image/')) {
-      const image = sharp(bufferData);
+      const image = sharp(Buffer.from(bufferData));
       if (extension === 'png') return image.png().toBuffer();
       if (extension === 'jpg' || extension === 'jpeg') return image.jpeg().toBuffer();
       if (extension === 'webp') return image.webp().toBuffer();
