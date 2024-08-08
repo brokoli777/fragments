@@ -109,7 +109,7 @@ module.exports = (req, res) => {
   }
 
   const convertFileType = async (mimeType, bufferData, extension) => {
-    const data = bufferData
+    const data = bufferData.toString();
 
     if (mimeType === 'text/plain') {
       if (extension === 'txt') return data;

@@ -191,7 +191,6 @@ describe('GET /v1/fragments', () => {
     });
   
     await fragment.save();
-    //await fragment.setData(imageBuffer.toString('base64'));
     await fragment.setData(imageBuffer);
   
     const getRes = await request(app)
@@ -218,7 +217,6 @@ describe('GET /v1/fragments', () => {
     });
   
     await fragment.save();
-    //await fragment.setData(imageBuffer.toString('base64'));
     await fragment.setData(imageBuffer);
   
     const getRes = await request(app)
@@ -226,7 +224,7 @@ describe('GET /v1/fragments', () => {
       .auth('user1@email.com', 'password1');
 
     expect(getRes.statusCode).toBe(200);
-    expect(getRes.headers['content-type']).toBe('image/png; charset=utf-8');
+    expect(getRes.headers['content-type']).toBe('image/png');
   });
   
   
@@ -246,8 +244,6 @@ describe('GET /v1/fragments', () => {
     });
   
     await fragment.save();
-    // Save the WebP buffer as a Base64 string
-    //await fragment.setData(webpBuffer.toString('base64'));
     await fragment.setData(webpBuffer);
   
     const getRes = await request(app)
