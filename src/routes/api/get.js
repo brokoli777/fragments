@@ -137,8 +137,8 @@ module.exports = (req, res) => {
   //   }
   // };
 
-  const convertFileType = async (mimeType, data, extension) => {
-    data = data.toString();
+  const convertFileType = async (mimeType, bufferData, extension) => {
+    const data = bufferData.toString();
 
     if (mimeType === 'text/plain') {
       if (extension === 'txt') return data;
@@ -170,12 +170,13 @@ module.exports = (req, res) => {
       }
       if (extension === 'txt' || extension == 'csv') return data;
     } else if (mimeType.startsWith('image/')) {
-      const image = sharp(Buffer.from(data, 'base64'));
+      const image = sharp(bufferData);
       if (extension === 'png') return image.png().toBuffer();
       if (extension === 'jpg' || extension === 'jpeg') return image.jpeg().toBuffer();
       if (extension === 'webp') return image.webp().toBuffer();
       if (extension === 'avif') return image.avif().toBuffer();
       if (extension === 'gif') return image.gif().toBuffer();
+      return bufferData;
     } else {
       throw new Error(`Conversion failed: Unsupported conversion (${mimeType} to ${extension})`);
     }
