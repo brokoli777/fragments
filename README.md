@@ -3,6 +3,8 @@
 
 A Node.js based REST API using Express.
 
+Microservice for storing and modifying Data Fragments for sub-systems.
+
 
 ## Scripts
 
